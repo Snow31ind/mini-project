@@ -1,107 +1,60 @@
-# Importing the required packages
+from sklearn.datasets import load_iris
 import numpy as np
-import pandas as pd
-from sklearn.metrics import confusion_matrix
-from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import accuracy_score
-from sklearn.metrics import classification_report
-  
-# Function importing Dataset
-def importdata():
-    balance_data = pd.read_csv(
-'https://archive.ics.uci.edu/ml/machine-learning-'+
-'databases/balance-scale/balance-scale.data',
-    sep= ',', header = None)
-      
-    # Printing the dataswet shape
-    print ("Dataset Length: ", len(balance_data))
-    print ("Dataset Shape: ", balance_data.shape)
-      
-    # Printing the dataset obseravtions
-    print ("Dataset: ",balance_data.head())
-    return balance_data
-  
-# Function to split the dataset
-def splitdataset(balance_data):
-  
-    # Separating the target variable
-    X = balance_data.values[:, 1:5]
-    Y = balance_data.values[:, 0]
-  
-    # Splitting the dataset into train and test
-    X_train, X_test, y_train, y_test = train_test_split( 
-    X, Y, test_size = 0.3, random_state = 100)
-      
-    return X, Y, X_train, X_test, y_train, y_test
-      
-# Function to perform training with giniIndex.
-def train_using_gini(X_train, X_test, y_train):
-  
-    # Creating the classifier object
-    clf_gini = DecisionTreeClassifier(criterion = "gini",
-            random_state = 100,max_depth=3, min_samples_leaf=5)
-  
-    # Performing training
-    clf_gini.fit(X_train, y_train)
-    return clf_gini
-      
-# Function to perform training with entropy.
-def tarin_using_entropy(X_train, X_test, y_train):
-  
-    # Decision tree with entropy
-    clf_entropy = DecisionTreeClassifier(
-            criterion = "entropy", random_state = 100,
-            max_depth = 3, min_samples_leaf = 5)
-  
-    # Performing training
-    clf_entropy.fit(X_train, y_train)
-    return clf_entropy
-  
-  
-# Function to make predictions
-def prediction(X_test, clf_object):
-  
-    # Predicton on test with giniIndex
-    y_pred = clf_object.predict(X_test)
-    print("Predicted values:")
-    print(y_pred)
-    return y_pred
-      
-# Function to calculate accuracy
-def cal_accuracy(y_test, y_pred):
-      
-    print("Confusion Matrix: ",
-        confusion_matrix(y_test, y_pred))
-      
-    print ("Accuracy : ",
-    accuracy_score(y_test,y_pred)*100)
-      
-    print("Report : ",
-    classification_report(y_test, y_pred))
-  
-# Driver code
-def main():
-      
-    # Building Phase
-    data = importdata()
-    X, Y, X_train, X_test, y_train, y_test = splitdataset(data)
-    clf_gini = train_using_gini(X_train, X_test, y_train)
-    clf_entropy = tarin_using_entropy(X_train, X_test, y_train)
-      
-    # Operational Phase
-    print("Results Using Gini Index:")
-      
-    # Prediction using gini
-    y_pred_gini = prediction(X_test, clf_gini)
-    cal_accuracy(y_test, y_pred_gini)
-      
-    print("Results Using Entropy:")
-    # Prediction using entropy
-    y_pred_entropy = prediction(X_test, clf_entropy)
-    cal_accuracy(y_test, y_pred_entropy)
-      
-      
-# Calling main function
-if __name__=="__main__":
-    main()
+from sklearn.tree import plot_tree
+
+
+iris=load_iris()
+# Parameters
+n_classes = 3
+plot_colors = "ryb"
+plot_step = 0.02
+
+for pairidx, pair in enumerate([[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]]):
+    # We only take the two corresponding features
+    X = iris.data[:, pair]
+    y = iris.target
+
+    # Train
+    clf = DecisionTreeClassifier().fit(X, y)
+
+    # Plot the decision boundary
+    plt.subplot(2, 3, pairidx + 1)
+
+    x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+    y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+    xx, yy = np.meshgrid(
+        np.arange(x_min, x_max, plot_step), np.arange(y_min, y_max, plot_step)
+    )
+    plt.tight_layout(h_pad=0.5, w_pad=0.5, pad=2.5)
+
+    Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+    cs = plt.contourf(xx, yy, Z, cmap=plt.cm.RdYlBu)
+
+    plt.xlabel(iris.feature_names[pair[0]])
+    plt.ylabel(iris.feature_names[pair[1]])
+
+    # Plot the training points
+    for i, color in zip(range(n_classes), plot_colors):
+        idx = np.where(y == i)
+        plt.scatter(
+            X[idx, 0],
+            X[idx, 1],
+            c=color,
+            label=iris.target_names[i],
+            cmap=plt.cm.RdYlBu,
+            edgecolor="black",
+            s=15,
+        )
+
+plt.suptitle("Decision surface of decision trees trained on pairs of features")
+plt.legend(loc="lower right", borderpad=0, handletextpad=0)
+_ = plt.axis("tight")
+
+plt.figure()
+clf = DecisionTreeClassifier().fit(iris.data, iris.target)
+plot_tree(clf, filled=True)
+plt.title("Decision tree trained on all the iris features")
+plt.show()
