@@ -3,6 +3,8 @@ import pandas as pd
 import locale
 from locale import atof
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn import metrics
+from sklearn.model_selection import train_test_split
 
 locale.setlocale(locale.LC_NUMERIC,'')
 
@@ -44,7 +46,20 @@ df['Change %'] = df['Change %'].apply(percent_to_float)
 df['Change %'] = df['Change %'].apply(up_or_down)
 # 
 
-# what is data and target
+# KNN
+#'''
+features=['Price','Open','High','Low','Vol.']
+X = df[features] # features
+y = df['Change %'] # target
+
+X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.3,random_state=1) # 70% training and 30% test
+
+kclf=KNeighborsClassifier()
+kclf=kclf.fit(X_train,y_train)
+y_pred=kclf.predict(X_test)
+#'''
+
 
 #print(df.dtypes)
 #print(df)
+print("Accuracy : ",metrics.accuracy_score(y_test,y_pred))
