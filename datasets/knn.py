@@ -48,15 +48,15 @@ df['Change %'] = df['Change %'].apply(up_or_down)
 
 # KNN
 #'''
-features=['Price','Open','High','Low','Vol.']
+features=['Price','Open','High','Low']
 X = df[features] # features
 y = df['Change %'] # target
 
 X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.3,random_state=1) # 70% training and 30% test
 
-kclf=KNeighborsClassifier()
-kclf=kclf.fit(X_train,y_train)
-y_pred=kclf.predict(X_test)
+kclf=KNeighborsClassifier()     # Creating
+kclf=kclf.fit(X_train,y_train)  # Training
+y_pred=kclf.predict(X_test)     # Predict
 #'''
 
 
