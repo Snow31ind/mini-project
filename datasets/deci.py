@@ -35,13 +35,7 @@ def percent_to_float(x): # 0.1% -> 0.001
             return float(x.replace('%',''))
     return 0.0
 #
-def up_or_down(x):
-    if type(x)==float or type(x)==int:
-        if x>0:
-            return True
-        elif x<=0:
-            return False
-    return 0.0
+
 #
 def time_convert(x):
     if type(x)==float or type(x)==int:
@@ -81,15 +75,14 @@ def time_convert2(x):
 df = pd.read_csv('VNINDEX_2010-2022.csv',sep=',',thousands=',')
 df['Vol.'] = df['Vol.'].apply(value_to_float)
 df['Change %'] = df['Change %'].apply(percent_to_float)
-df['Change %'] = df['Change %'].apply(up_or_down)
 df['Date'] = df['Date'].apply(time_convert)
 df['Date'] = df['Date'].apply(time_convert2)
 # 
 
-print(df.dtypes)
+#print(df.dtypes)
 #print(df)
 # Main part
-'''
+#'''
 features=['Price','Open','High','Low']
 X = df[features] # features
 y = df['Change %'] # target
@@ -104,12 +97,10 @@ y_pred = clf.predict(X_test)    # Predict
 
 #Print Evaluating
 print("Classify Accuracy : ",metrics.accuracy_score(y_test,y_pred))
-#'''
-
-#'''
+'''
 X_reg = df['Date']  # features
 y_reg = df['Vol.']  # traget
 reg1 = DecisionTreeRegressor(max_depth=2)
 reg2 = DecisionTreeRegressor(max_depth=5)
 
-#'''
+'''

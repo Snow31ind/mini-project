@@ -32,18 +32,11 @@ def percent_to_float(x): # 0.1% -> 0.001
             return float(x.replace('%',''))
     return 0.0
 #
-def up_or_down(x):
-    if type(x)==float or type(x)==int:
-        if x>=0:
-            return 1
-        elif x<0:
-            return 0
-    return 0.0
+
 # Arrange the main 
 df = pd.read_csv('VNINDEX_2010-2022.csv',sep=',',thousands=',') # 1,000 -> 1000
 df['Vol.'] = df['Vol.'].apply(value_to_float)                   
 df['Change %'] = df['Change %'].apply(percent_to_float)
-df['Change %'] = df['Change %'].apply(up_or_down)
 # 
 
 # KNN
